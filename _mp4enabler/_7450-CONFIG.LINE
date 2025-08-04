@@ -1,0 +1,50 @@
+bash configure \
+    --enable-shared \
+    --cpu=ppc7450 \
+    --extra-cflags="-arch ppc7450 -maltivec" \
+    --extra-cxxflags="-arch ppc7450 -maltivec" \
+    --extra-ldflags="-arch ppc7450" \
+    --disable-pthreads \
+    --disable-programs \
+    --disable-avdevice \
+    --disable-avfilter \
+    --disable-sdl2 \
+    --disable-doc \
+    --disable-swresample \
+    --disable-swscale \
+    --disable-lzma \
+    --disable-runtime-cpudetect \
+    --disable-network \
+    --disable-postproc \
+    --disable-encoders \
+    --disable-protocols \
+    --disable-muxers \
+    --disable-hwaccels \
+    --disable-debug \
+    --disable-libxcb \
+    --disable-vaapi \
+    --disable-vda \
+    --disable-d3d11va \
+    --disable-dxva2 \
+    --disable-vdpau \
+    --disable-securetransport \
+    --disable-decoder=vp8 \
+    --disable-decoder=vp9 \
+    --disable-decoder=cinepak \
+    --disable-decoder=indeo2 \
+    --disable-decoder=indeo3 \
+    --disable-decoder=indeo4 \
+    --disable-decoder=indeo5 \
+    --disable-decoder=xbm \
+    --disable-decoder=xface \
+    --disable-decoder=bethsoftvid \
+    --disable-decoder=bink \
+    --disable-decoder=binkaudio_dct \
+    --disable-decoder=binkaudio_rdft \
+    --disable-decoder=smacker \
+    --disable-decoder=pcx \
+    --disable-parser=pnm \
+    --disable-demuxer=bethsoftvid \
+    --disable-demuxer=bink \
+    --disable-demuxer=smacker \
+    --disable-demuxer=segafilm
