@@ -786,8 +786,8 @@ yuv2rgba64_X_c_template(SwsContext *c, const int16_t *lumFilter,
 
     for (i = 0; i < ((dstW + 1) >> 1); i++) {
         int j;
-        int Y1 = -0x40000000;
-        int Y2 = -0x40000000;
+        unsigned Y1 = -0x40000000;
+        unsigned Y2 = -0x40000000;
         int U  = -(128 << 23); // 19
         int V  = -(128 << 23);
         int R, G, B;
@@ -815,9 +815,9 @@ yuv2rgba64_X_c_template(SwsContext *c, const int16_t *lumFilter,
         }
 
         // 8 bits: 12+15=27; 16 bits: 12+19=31
-        Y1 >>= 14; // 10
+        Y1 = (int)Y1 >> 14; // 10
         Y1 += 0x10000;
-        Y2 >>= 14;
+        Y2 = (int)Y2 >> 14;
         Y2 += 0x10000;
         U  >>= 14;
         V  >>= 14;
@@ -836,20 +836,20 @@ yuv2rgba64_X_c_template(SwsContext *c, const int16_t *lumFilter,
         B =                            U * c->yuv2rgb_u2b_coeff;
 
         // 8 bits: 30 - 22 = 8 bits, 16 bits: 30 bits - 14 = 16 bits
-        output_pixel(&dest[0], av_clip_uintp2(((R_B + Y1) >> 14) + (1<<15), 16));
-        output_pixel(&dest[1], av_clip_uintp2(((  G + Y1) >> 14) + (1<<15), 16));
-        output_pixel(&dest[2], av_clip_uintp2(((B_R + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y1) >> 14) + (1<<15), 16));
         if (eightbytes) {
             output_pixel(&dest[3], av_clip_uintp2(A1      , 30) >> 14);
-            output_pixel(&dest[4], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[5], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[6], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[4], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[5], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[6], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
             output_pixel(&dest[7], av_clip_uintp2(A2      , 30) >> 14);
             dest += 8;
         } else {
-            output_pixel(&dest[3], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[4], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[5], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[3], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[4], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[5], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
             dest += 6;
         }
     }
@@ -876,8 +876,8 @@ yuv2rgba64_2_c_template(SwsContext *c, const int32_t *buf[2],
     av_assert2(uvalpha <= 4096U);
 
     for (i = 0; i < ((dstW + 1) >> 1); i++) {
-        int Y1 = (buf0[i * 2]     * yalpha1  + buf1[i * 2]     * yalpha) >> 14;
-        int Y2 = (buf0[i * 2 + 1] * yalpha1  + buf1[i * 2 + 1] * yalpha) >> 14;
+        unsigned Y1 = (buf0[i * 2]     * yalpha1  + buf1[i * 2]     * yalpha) >> 14;
+        unsigned Y2 = (buf0[i * 2 + 1] * yalpha1  + buf1[i * 2 + 1] * yalpha) >> 14;
         int U  = (ubuf0[i]        * uvalpha1 + ubuf1[i]        * uvalpha - (128 << 23)) >> 14;
         int V  = (vbuf0[i]        * uvalpha1 + vbuf1[i]        * uvalpha - (128 << 23)) >> 14;
         int R, G, B;
@@ -901,20 +901,20 @@ yuv2rgba64_2_c_template(SwsContext *c, const int32_t *buf[2],
             A2 += 1 << 13;
         }
 
-        output_pixel(&dest[0], av_clip_uintp2(((R_B + Y1) >> 14) + (1<<15), 16));
-        output_pixel(&dest[1], av_clip_uintp2(((  G + Y1) >> 14) + (1<<15), 16));
-        output_pixel(&dest[2], av_clip_uintp2(((B_R + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y1) >> 14) + (1<<15), 16));
+        output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y1) >> 14) + (1<<15), 16));
         if (eightbytes) {
             output_pixel(&dest[3], av_clip_uintp2(A1      , 30) >> 14);
-            output_pixel(&dest[4], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[5], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[6], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[4], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[5], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[6], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
             output_pixel(&dest[7], av_clip_uintp2(A2      , 30) >> 14);
             dest += 8;
         } else {
-            output_pixel(&dest[3], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[4], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-            output_pixel(&dest[5], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[3], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[4], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+            output_pixel(&dest[5], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
             dest += 6;
         }
     }
@@ -932,8 +932,8 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
 
     if (uvalpha < 2048) {
         for (i = 0; i < ((dstW + 1) >> 1); i++) {
-            int Y1 = (buf0[i * 2]    ) >> 2;
-            int Y2 = (buf0[i * 2 + 1]) >> 2;
+            SUINT Y1 = (buf0[i * 2]    ) >> 2;
+            SUINT Y2 = (buf0[i * 2 + 1]) >> 2;
             int U  = (ubuf0[i] - (128 << 11)) >> 2;
             int V  = (vbuf0[i] - (128 << 11)) >> 2;
             int R, G, B;
@@ -946,8 +946,8 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
             Y2 += (1 << 13) - (1 << 29);
 
             if (hasAlpha) {
-                A1 = abuf0[i * 2    ] << 11;
-                A2 = abuf0[i * 2 + 1] << 11;
+                A1 = abuf0[i * 2    ] * (1 << 11);
+                A2 = abuf0[i * 2 + 1] * (1 << 11);
 
                 A1 += 1 << 13;
                 A2 += 1 << 13;
@@ -957,20 +957,20 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
             G = V * c->yuv2rgb_v2g_coeff + U * c->yuv2rgb_u2g_coeff;
             B =                            U * c->yuv2rgb_u2b_coeff;
 
-            output_pixel(&dest[0], av_clip_uintp2(((R_B + Y1) >> 14) + (1<<15), 16));
-            output_pixel(&dest[1], av_clip_uintp2(((  G + Y1) >> 14) + (1<<15), 16));
-            output_pixel(&dest[2], av_clip_uintp2(((B_R + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y1) >> 14) + (1<<15), 16));
             if (eightbytes) {
                 output_pixel(&dest[3], av_clip_uintp2(A1      , 30) >> 14);
-                output_pixel(&dest[4], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[5], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[6], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[4], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[5], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[6], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
                 output_pixel(&dest[7], av_clip_uintp2(A2      , 30) >> 14);
                 dest += 8;
             } else {
-                output_pixel(&dest[3], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[4], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[5], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[3], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[4], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[5], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
                 dest += 6;
             }
         }
@@ -978,8 +978,8 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
         const int32_t *ubuf1 = ubuf[1], *vbuf1 = vbuf[1];
         int A1 = 0xffff<<14, A2 = 0xffff<<14;
         for (i = 0; i < ((dstW + 1) >> 1); i++) {
-            int Y1 = (buf0[i * 2]    ) >> 2;
-            int Y2 = (buf0[i * 2 + 1]) >> 2;
+            SUINT Y1 = (buf0[i * 2]    ) >> 2;
+            SUINT Y2 = (buf0[i * 2 + 1]) >> 2;
             int U  = (ubuf0[i] + ubuf1[i] - (128 << 12)) >> 3;
             int V  = (vbuf0[i] + vbuf1[i] - (128 << 12)) >> 3;
             int R, G, B;
@@ -992,8 +992,8 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
             Y2 += (1 << 13) - (1 << 29);
 
             if (hasAlpha) {
-                A1 = abuf0[i * 2    ] << 11;
-                A2 = abuf0[i * 2 + 1] << 11;
+                A1 = abuf0[i * 2    ] * (1 << 11);
+                A2 = abuf0[i * 2 + 1] * (1 << 11);
 
                 A1 += 1 << 13;
                 A2 += 1 << 13;
@@ -1003,20 +1003,20 @@ yuv2rgba64_1_c_template(SwsContext *c, const int32_t *buf0,
             G = V * c->yuv2rgb_v2g_coeff + U * c->yuv2rgb_u2g_coeff;
             B =                            U * c->yuv2rgb_u2b_coeff;
 
-            output_pixel(&dest[0], av_clip_uintp2(((R_B + Y1) >> 14) + (1<<15), 16));
-            output_pixel(&dest[1], av_clip_uintp2(((  G + Y1) >> 14) + (1<<15), 16));
-            output_pixel(&dest[2], av_clip_uintp2(((B_R + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y1) >> 14) + (1<<15), 16));
+            output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y1) >> 14) + (1<<15), 16));
             if (eightbytes) {
                 output_pixel(&dest[3], av_clip_uintp2(A1      , 30) >> 14);
-                output_pixel(&dest[4], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[5], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[6], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[4], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[5], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[6], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
                 output_pixel(&dest[7], av_clip_uintp2(A2      , 30) >> 14);
                 dest += 8;
             } else {
-                output_pixel(&dest[3], av_clip_uintp2(((R_B + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[4], av_clip_uintp2(((  G + Y2) >> 14) + (1<<15), 16));
-                output_pixel(&dest[5], av_clip_uintp2(((B_R + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[3], av_clip_uintp2(((int)(R_B + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[4], av_clip_uintp2(((int)(  G + Y2) >> 14) + (1<<15), 16));
+                output_pixel(&dest[5], av_clip_uintp2(((int)(B_R + Y2) >> 14) + (1<<15), 16));
                 dest += 6;
             }
         }
@@ -1075,9 +1075,9 @@ yuv2rgba64_full_X_c_template(SwsContext *c, const int16_t *lumFilter,
         B =                            U * c->yuv2rgb_u2b_coeff;
 
         // 8bit: 30 - 22 = 8bit, 16bit: 30bit - 14 = 16bit
-        output_pixel(&dest[0], av_clip_uintp2(((R_B + Y)>>14) + (1<<15), 16));
-        output_pixel(&dest[1], av_clip_uintp2(((  G + Y)>>14) + (1<<15), 16));
-        output_pixel(&dest[2], av_clip_uintp2(((B_R + Y)>>14) + (1<<15), 16));
+        output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + (unsigned)Y)>>14) + (1<<15), 16));
+        output_pixel(&dest[1], av_clip_uintp2(((int)(  G + (unsigned)Y)>>14) + (1<<15), 16));
+        output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + (unsigned)Y)>>14) + (1<<15), 16));
         if (eightbytes) {
             output_pixel(&dest[3], av_clip_uintp2(A, 30) >> 14);
             dest += 4;
@@ -1151,7 +1151,7 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
 
     if (uvalpha < 2048) {
         for (i = 0; i < dstW; i++) {
-            int Y  = (buf0[i]) >> 2;
+            SUINT Y  = (buf0[i]) >> 2;
             int U  = (ubuf0[i] - (128 << 11)) >> 2;
             int V  = (vbuf0[i] - (128 << 11)) >> 2;
             int R, G, B;
@@ -1161,7 +1161,7 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
             Y += (1 << 13) - (1 << 29);
 
             if (hasAlpha) {
-                A = abuf0[i] << 11;
+                A = abuf0[i] * (1 << 11);
 
                 A += 1 << 13;
             }
@@ -1170,9 +1170,9 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
             G = V * c->yuv2rgb_v2g_coeff + U * c->yuv2rgb_u2g_coeff;
             B =                            U * c->yuv2rgb_u2b_coeff;
 
-            output_pixel(&dest[0], av_clip_uintp2(((R_B + Y) >> 14) + (1<<15), 16));
-            output_pixel(&dest[1], av_clip_uintp2(((  G + Y) >> 14) + (1<<15), 16));
-            output_pixel(&dest[2], av_clip_uintp2(((B_R + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y) >> 14) + (1<<15), 16));
             if (eightbytes) {
                 output_pixel(&dest[3], av_clip_uintp2(A, 30) >> 14);
                 dest += 4;
@@ -1184,7 +1184,7 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
         const int32_t *ubuf1 = ubuf[1], *vbuf1 = vbuf[1];
         int A = 0xffff<<14;
         for (i = 0; i < dstW; i++) {
-            int Y  = (buf0[i]    ) >> 2;
+            SUINT Y  = (buf0[i]    ) >> 2;
             int U  = (ubuf0[i] + ubuf1[i] - (128 << 12)) >> 3;
             int V  = (vbuf0[i] + vbuf1[i] - (128 << 12)) >> 3;
             int R, G, B;
@@ -1194,7 +1194,7 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
             Y += (1 << 13) - (1 << 29);
 
             if (hasAlpha) {
-                A = abuf0[i] << 11;
+                A = abuf0[i] * (1 << 11);
 
                 A += 1 << 13;
             }
@@ -1203,9 +1203,9 @@ yuv2rgba64_full_1_c_template(SwsContext *c, const int32_t *buf0,
             G = V * c->yuv2rgb_v2g_coeff + U * c->yuv2rgb_u2g_coeff;
             B =                            U * c->yuv2rgb_u2b_coeff;
 
-            output_pixel(&dest[0], av_clip_uintp2(((R_B + Y) >> 14) + (1<<15), 16));
-            output_pixel(&dest[1], av_clip_uintp2(((  G + Y) >> 14) + (1<<15), 16));
-            output_pixel(&dest[2], av_clip_uintp2(((B_R + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[0], av_clip_uintp2(((int)(R_B + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[1], av_clip_uintp2(((int)(  G + Y) >> 14) + (1<<15), 16));
+            output_pixel(&dest[2], av_clip_uintp2(((int)(B_R + Y) >> 14) + (1<<15), 16));
             if (eightbytes) {
                 output_pixel(&dest[3], av_clip_uintp2(A, 30) >> 14);
                 dest += 4;
@@ -1634,9 +1634,9 @@ static av_always_inline void yuv2rgb_write_full(SwsContext *c,
     Y -= c->yuv2rgb_y_offset;
     Y *= c->yuv2rgb_y_coeff;
     Y += 1 << 21;
-    R = (unsigned)Y + V*c->yuv2rgb_v2r_coeff;
-    G = (unsigned)Y + V*c->yuv2rgb_v2g_coeff + U*c->yuv2rgb_u2g_coeff;
-    B = (unsigned)Y +                          U*c->yuv2rgb_u2b_coeff;
+    R = (unsigned)Y + V*(unsigned)c->yuv2rgb_v2r_coeff;
+    G = (unsigned)Y + V*(unsigned)c->yuv2rgb_v2g_coeff + U*(unsigned)c->yuv2rgb_u2g_coeff;
+    B = (unsigned)Y +                                    U*(unsigned)c->yuv2rgb_u2b_coeff;
     if ((R | G | B) & 0xC0000000) {
         R = av_clip_uintp2(R, 30);
         G = av_clip_uintp2(G, 30);
