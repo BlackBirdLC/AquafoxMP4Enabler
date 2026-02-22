@@ -18,7 +18,7 @@ LIBAVFORMAT = libavformat.57.dylib
 LIBAVUTIL = libavutil.55.dylib
 
 # General Configuration
-VERSION = 3.4.13
+VERSION = 3.4.14
 APPNAME = Aquafox\ MP4\ Enabler
 
 # 7450 Configuration
